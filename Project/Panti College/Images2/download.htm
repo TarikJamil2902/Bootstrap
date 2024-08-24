@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>eSIF</title>
+<link rel="stylesheet" href="css/reset.css" type="text/css" />    
+<link rel="stylesheet" href="css/template.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#credit').click(function() {
+		window.location = 'http://www.nixtecsys.com/esifcredits.html';
+	});
+	$('#EIIN').keyup(function(event){
+		_get_institution();
+	}).keydown(function(event) {
+		if (event.which == 13) {
+			event.preventDefault();
+		}
+	});
+	$('#EIIN').change(function(event){
+		_get_institution();
+	}).keydown(function(event) {
+		if (event.which == 13) {
+			event.preventDefault();
+		}
+	});
+	$('#exam').change(function(event){
+		_get_institution();
+	}).keydown(function(event) {
+		if (event.which == 13) {
+			event.preventDefault();
+		}
+	});
+
+	$('#amount').change(function(){
+		var amount	= parseFloat($(this).val());
+		amount		= number_format(amount, 2, '.', '');
+		$(this).val(amount);
+	});
+	
+	
+
+	$('#board').change(function(){
+								
+		if($(this).val()=='')
+		{
+			var board_logo	= '';
+			var exam		= '';
+		}
+		else
+		{
+			var board	= $('select#board option:selected').text();
+			var board_logo	= '<img src="images/board/' + board + '.png"/>';
+			
+			if(board=='BTEB' || board=='Technical-HSC (Vocational)' || board=='Technical-HSC(Business)')
+				exam	= 'diploma';
+			else if(board=='Madrasah')
+				exam	= 'dakhil';
+			else
+				exam	= 'jsc';
+		}
+		
+		$('#board_logo').html(board_logo);
+		$('#exam').val(exam);
+		_get_institution();
+	});
+	
+	$('#session').keyup(function(){
+		var session	= $(this).val();
+		if(session.length==4)
+		{
+			var session_start	= parseInt(session);
+			var session_end		= session_start+1;
+			session			= session_start + '-' + session_end;
+			$(this).val(session);
+		}
+	});
+	
+	$(".digit").keypress(function (e)
+	{
+	  //if the letter is not digit then display error and don't type anything
+	  if( e.which!=8 && e.which!=0 && (e.which<48 || e.which>57))
+	  {
+		return false;
+	  }
+	});
+	
+	$(".decimal").keypress(function (e)
+	{
+	  //if the letter is not digit then display error and don't type anything
+	  if( e.which!=8 && e.which!=0 && e.which!=46 && (e.which<48 || e.which>57))
+	  {
+		return false;
+	  }
+	  
+	});
+
+	
+	$('.upper').keyup(function(){
+		var input	= $(this).val();
+		if(input!='')
+			$(this).val(input.toUpperCase());
+	});
+	
+	_init();
+	_get_institution();
+	//$('#btn_next').attr('disabled', true);	
+});
+
+function _validate()
+{
+	var board		= $('#board').val();
+	var session		= $('#session').val();
+	var payorder	= $('#payorder').val();
+	var amount		= $('#amount').val();
+	var EIIN	= $('#EIIN').val();
+	var password	= $('#password').val();
+	var inst_name	= $('#inst_name').html();
+	
+	if(board=='')
+	{
+		alert('Please select Board');
+		return false;
+	}
+	else if(session=='')
+	{
+		alert('Please enter Session');
+		return false;
+	}
+	else if(session.length<9)
+	{
+		alert('Invalid Session');
+		return false;
+	}
+	else if(payorder=='')
+	{
+		alert('Please enter Draft/Pay Order No.');
+		return false;
+	}
+	else if(amount=='')
+	{
+		alert('Please enter Draft/Pay Order Amount');
+		return false;
+	}
+	else if(EIIN=='')
+	{
+		alert('Please enter EIIN');
+		return false;
+	}
+	else if(inst_name=='' || inst_name=='<font color="red">Institute not verified</font>')
+	{
+		alert('Institute not verified');
+		return false;
+	}
+	else if(password=='')
+	{
+		alert('Please enter Password');
+		return false;
+	}
+	return true;
+}
+
+function _set_session() {
+  var bo = $('#board').attr('value');
+  var ex = $('#exam').attr('value');
+  var ds = '2023-2024';
+
+
+  switch (bo) {
+  case '0': // dhaka
+    //if (ex == 'ssc' || ex == 'hsc' || ex == 'dibs') {
+    if (ex == 'hsc') {
+      $('#session').attr('value', '2019-2020');
+      //$('#session').attr('value', '2011-2012');
+    } else if (ex == 'dibs') {
+      //$('#session').attr('value', '2012-2013');
+      $('#session').attr('value', '2012-2013');
+    } else if (ex == "ssc") {
+      $('#session').attr('value', '2015-2016');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  case '2': // rajshahi
+    if (ex == 'hsc') {
+      $('#session').attr('value', '2014-2015');
+    } else if (ex == 'ssc') {
+      $('#session').attr('value', '2015-2016');
+    } else if (ex == 'jsc') {
+      $('#session').attr('value', '2014-2015');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  case '5': // comilla
+    if (ex == 'hsc') {
+      $('#session').attr('value', '2012-2013');
+    } else if (ex == "ssc") {
+      $('#session').attr('value', '2015-2016');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  case '7': // sylhet
+    if (ex == 'hsc') {
+      $('#session').attr('value', '2016-2017');
+      //$('#session').attr('value', '2013-2014'); // temporary
+      //$('#session').attr('value', '2011-2012');
+    } else if (ex == "ssc") {
+      $('#session').attr('value', '2017-2018');
+    } else if (ex == "jsc") {
+      $('#session').attr('value', '2017-2018');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  case '8': // madrasah
+    if (ex == 'dakhil') {
+      $('#session').attr('value', '2012-2013');
+      //$('#session').attr('value', '2011-2012');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  case '9': // dinajpur
+    if (ex == 'hsc') {
+      $('#session').attr('value', '2016-2017');
+    } else if (ex == "ssc") {
+      $('#session').attr('value', '2015-2016');
+      //$('#session').attr('value', '2014-2015'); //  temporarily opening
+    } else if (ex == 'jsc') {
+      $('#session').attr('value', '2016-2017');
+    } else {
+      $('#session').attr('value', ds);
+    }
+
+    break;
+  default:
+    $('#session').attr('value', ds);
+    break;
+  }
+}
+
+
+function _get_institution()
+{
+	var EIIN	= $('#EIIN').val();
+	var board	= $('#board').val();
+	var exam	= $('#exam').val();
+	
+	//var length	= (board==10 || board==8 || board==11 || board==12) ? 5 : 4;
+	var length	= 6; // EIIN based login
+	
+	$('#EIIN').attr('maxlength', length);
+	
+	_set_session();
+	
+	if(EIIN.length ==length)
+	{
+		if (board == '') { $('#EIIN').delay(1000); alert("Please Select Board!"); return false; }
+		if (exam == '') { alert("Please Select Exam!"); return false; }
+		var url='';
+		if(board == 10 && exam=='hsc')
+			exam = 'bteb_hsc';
+			
+		if(exam=='hsc' || exam=='alim' || exam=='dibs' || exam == 'jsc' || exam == 'jdc')
+			url	= 'ajax/_get_'+ exam +'_institution.php?e='+EIIN+'&b='+board;
+		else 	
+			url	= 'ajax/_get_institution.php?e='+EIIN+'&b='+board;
+		/*$('#inst_name').html(url);
+		return false;
+		*/
+		var resp = $.ajax({
+			url: url,
+			async: false,
+			cache: false
+		}).responseText;
+		
+		$('#inst_name').html(resp);
+		
+		if(resp=='')
+		{
+			$('#inst_name').html('<font color="red">Institute not verified</font>');
+		}
+		else
+			$('#password').focus();
+	}
+	else
+	{
+		$('#inst_name').html('');
+	}
+
+}
+
+function  _init()
+{
+	$('#EIIN').val('');
+	$('#password').val('');
+}
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+    var n = !isFinite(+number) ? 0 : +number, 
+        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s = '',
+        toFixedFix = function (n, prec) {
+            var k = Math.pow(10, prec);
+            return '' + Math.round(n * k) / k;        };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);    }
+    if ((s[1] || '').length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1).join('0');
+    }    return s.join(dec);
+}
+</script>
+
+</head>
+
+<body>
+<div id="wrapper">
+
+    
+    <div id="main_content">
+    
+        <div id="main_header">
+			<div><img align="left" src="images/bd_logo.png" style="width: 60px; padding: 5px 10px 0pt;"></div>
+            <h3>eSIF</h3>
+            <p>Electronic Student Information Form</p>
+        </div><!-- end main_header-->
+        
+        <form id="esif_form" action="/index.php" method="post" onSubmit="return _validate();">
+        <div class="container">
+            <fieldset>
+            
+                <legend>Please fill in the following information</legend>
+                
+                <p style="margin-top: 60px;">
+                    <label for="board">Board</label>
+                    <select id="board" name="board_id">
+                    	<option value="">Select Board</option>
+						                        <option value="0">Dhaka</option>
+						                        <option value="5">Comilla</option>
+						                        <option value="2">Rajshahi</option>
+						                        <option value="4">Jessore</option>
+						                        <option value="3">Chittagong</option>
+						                        <option value="6">Barisal</option>
+						                        <option value="7">Sylhet</option>
+						                        <option value="9">Dinajpur</option>
+						                        <option value="8">Madrasah</option>
+						                        <option value="10">BTEB</option>
+						                        <option value="11">BOU</option>
+						                    </select>
+                    <span id="board_logo"></span>                    
+                </p>
+                <p>
+                    <label for="exam">Examination</label>
+                    <select id="exam" name="exam">
+                        <option value="">Select Exam</option>
+                        <option value="jsc">J. S. C</option>
+                        <!--<option value="jdc">J. D. C</option>-->
+                        <option value="ssc">S. S. C</option>
+			<option value="hsc">H. S. C</option>
+                        <option value="dakhil">Dakhil</option>
+                        <option value="diploma">Diploma Engineering</option>
+                        <option value="alim">Alim</option>
+                        <option value="dibs">D. I. B. S.</option>
+                    </select>                    
+                </p>
+                
+                <p>
+                    <label for="session">Session</label>
+                    <input type="text" id="session" name="session" class="digit" maxlength="9" readonly="true" value="2023-2024"/>
+                </p>
+                <p>
+                    <label for="payorder">Draft/Pay Order No.</label>
+                    <input type="text" id="payorder" name="payorder" class="digit" value="" maxlength="12"/>
+                </p>
+                <p>
+                    <label for="amount">Amount (Taka)</label>
+                    <input type="text" id="amount" name="amount" class="decimal" value=""/>
+                </p>
+                
+                <p>
+                    <label for="EIIN">EIIN</label>
+                    <input type="text" id="EIIN" name="EIIN" class="digit" maxlength="4"/>
+					
+                </p>
+                <div id="inst_name"></div>
+                <p>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"/>
+                </p>
+                
+            </fieldset>
+            
+            <p class="button_container">
+				<input type="submit" id="btn_next" value="Next">
+            </p>
+            
+        <input type="hidden" name="submit_form" id="submit_form" value="1">
+        
+        </div>
+        </form>
+        
+        		<div id="dev_info">
+        
+            <p>Powered by:<img id="credit_tele" src="images/tt_logo.gif"/></p>
+            <p>Developed &amp; Maintained by:<img id="credit" src="images/dev_logo.gif"/></p>
+
+        
+        </div>
+<!--[if IE]>
+<script type="text/javascript" src="js/jquery.corner.js"></script>
+<script type="text/javascript">
+$("#main_header, #dev_info").corner("10px");
+</script>
+<![endif]-->
+       
+    </div><!-- end main_content -->
+    
+    
+    
+    <div id="footer">
+
+        
+    
+    </div><!-- END #footer -->
+    
+    
+    
+</div><!-- end wrapper-->
+
+
+</body>
+</html>

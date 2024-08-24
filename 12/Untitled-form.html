@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BS Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+    <form name= Create Account>
+      <div class="mb-3 mt-3">
+        <label for="fname" class="form-label">First Name:</label>
+        <input type="text" class="form-control" id="fName" placeholder="First Name" >
+      </div>
+      <div class="mb-3 mt-3">
+        <label for="lname" class="form-label">Last Name:</label>
+        <input type="text" class="form-control" id="lName" placeholder="Last Name">
+      </div>
+      <label>Gender</label><br>
+      <div class="form-check">
+        <input type="radio" class="form-check-input"  name="gender" value="Male" checked>Male
+        <label class="form-check-label" for="radio1"></label>
+      </div>
+      <div class="form-check">
+        <input type="radio" class="form-check-input"  name="gender" value="Female">Female
+        <label class="form-check-label" for="radio2"></label>
+      </div>
+      <div class="mb-3 mt-3">
+        <label for="country" class="form-label">Country:</label>
+        <input type="text" class="form-control" id="country" placeholder="Country name..">
+      </div>
+
+      <div>
+        <div class="mb-3 mt-3">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter email">
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="pwd" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="pwd" placeholder="Enter password"> 
+        </div>
+        <div>
+          
+        </div>
+        <div class="form-check mb-3">
+        <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" id="remember" name="remember"> Remember me
+        </label>
+        </div>
+        <p>
+  <button type="button" onclick="JekonoNam()" class="btn btn-primary">Submit</button>
+          <button type="reset" class="btn btn-primary">Reset</button>
+</p>
+
+   </p>
+    </form>
+    <div id="output"></div>
+</div>  
+
+<script>
+  function JekonoNam(){
+    
+    let fName = document.getElementById("fName").value;
+      let lName = document.getElementById("lName").value;
+      // let radioVal = displayRadioValue();
+      // let gender2 = document.getElementById("radio2").value;
+      let country = document.getElementById("country").value;
+      let email = document.getElementById("email").value;
+      let pwd = document.getElementById("pwd").value;
+      let remember = document.getElementById("remember").checked;
+   
+      let allValue = "First Name : " + fName + "<br>" + "Last  : " + lName + "<br>"
+     + "Country : " + country + "<br>" +"Email : " + email + "<br>" + "Password : " + pwd 
+     + "<br>" + "Remember : " + remember;
+
+    document.getElementById("output").innerHTML = allValue;
+    
+  }
+  
+</script>
+</body>
+</html>
